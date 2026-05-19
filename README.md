@@ -1,4 +1,4 @@
- СиСА 2026
+2026
 1.	ISP
  hostnamectl set-hostname isp
 exec bash
