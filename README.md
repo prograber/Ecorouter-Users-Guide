@@ -201,3 +201,208 @@ gpasswd -a sshuser wheel
 echo "search au-team.irpo" > /etc/resolv.conf
 echo "nameserver 10.10.100.2" >> /etc/resolv.conf
 timedatectl set-timezone Europe/Moscow
+####################################################################################################################################################################
+####################################################################################################################################################################
+####################################################################################################################################################################
+####################################################################################################################################################################
+####################################################################################################################################################################
+
+Модуль 2 
+BR-SRV
+Настройка Samba DC
+
+apt-get update
+apt-get install -y task-samba-dc bind bind-utils
+
+samba-tool domain provision --realm=AU-TEAM.IRPO --domain=AU-TEAM --adminpass='P@ssw0rd' --server-role=dc --dns-backend=BIND9_DLZ
+
+systemctl enable --now samba
+host -t SRV _ldap._tcp.au-team.irpo
+
+Создание пользователей и группы hq
+
+samba-tool user create hquser1 P@ssw0rd
+samba-tool user create hquser2 P@ssw0rd
+samba-tool user create hquser3 P@ssw0rd
+samba-tool user create hquser4 P@ssw0rd
+samba-tool user create hquser5 P@ssw0rd
+
+samba-tool group add hq
+samba-tool group addmembers hq hquser1,hquser2,hquser3,hquser4,hquser5
+
+Настройка Ansible
+
+apt-get install -y ansible sshpass
+
+nano /etc/ansible/hosts
+
+[hq]
+hq-srv ansible_host=192.168.100.2
+hq-cli ansible_host=192.168.100.3
+hq-rtr ansible_host=192.168.100.1
+
+[branch]
+br-rtr ansible_host=192.168.200.1
+
+ansible all -m ping
+
+Развёртывание Docker testapp
+
+apt-get install -y docker docker-compose
+systemctl enable --now docker
+
+mount /dev/sr0 /mnt
+docker load < /mnt/docker/site_latest.tar
+docker load < /mnt/docker/mariadb_latest.tar
+
+mkdir /opt/testapp
+
+nano /opt/testapp/docker-compose.yml
+
+HQ-SRV
+Создание RAID0
+
+apt-get install -y mdadm
+
+mdadm --create --verbose /dev/md0 --level=0 --raid-devices=2 /dev/sdb /dev/sdc
+
+mkfs.ext4 /dev/md0
+mkdir /raid
+mount /dev/md0 /raid
+
+nano /etc/fstab
+Добавить:
+/dev/md0 /raid ext4 defaults 0 0
+
+Настройка NFS сервера
+
+apt-get install -y nfs-kernel-server
+
+mkdir -p /raid/nfs
+chmod 777 /raid/nfs
+
+nano /etc/exports
+
+/raid/nfs 192.168.100.0/24(rw,sync,no_subtree_check)
+
+exportfs -ra
+systemctl restart nfs-server
+
+Настройка Apache + MariaDB
+
+apt-get install -y lamp-server
+
+mount /dev/sr0 /mnt
+
+cp /mnt/web/index.php /var/www/html
+cp /mnt/web/logo.png /var/www/html
+
+systemctl enable --now mariadb
+
+CREATE DATABASE webdb;
+CREATE USER 'webc'@'localhost' IDENTIFIED BY 'P@ssw0rd';
+GRANT ALL PRIVILEGES ON webdb.* TO 'webc'@'localhost';
+FLUSH PRIVILEGES;
+
+Настройка Chrony клиента
+
+apt-get install -y chrony
+
+nano /etc/chrony.conf
+
+server <IP_ISP> iburst
+
+systemctl restart chronyd
+
+HQ-CLI
+Ввод в домен
+get install -y task-auth-ad-sssd
+
+realm join AU-TEAM.IRPO -U Administrator
+
+id hquser1
+
+Настройка ограниченного sudo
+
+visudo
+
+%hq ALL=(ALL) NOPASSWD: /usr/bin/cat, /usr/bin/grep, /usr/bin/id
+
+Настройка NFS клиента
+
+apt-get install -y nfs-utils
+
+mkdir -p /mnt/nfs
+
+nano /etc/fstab
+
+192.168.100.2:/raid/nfs /mnt/nfs nfs defaults 0 0
+
+mount -a
+
+Установка Яндекс.Браузера
+
+apt-get install -y yandex-browser-stable
+
+yandex-browser
+
+ISP
+Настройка Chrony сервера
+
+apt-get install -y chrony
+
+nano /etc/chrony.conf
+
+server pool.ntp.org iburst
+local stratum 5
+allow 192.168.0.0/16
+
+systemctl restart chronyd
+
+Настройка Reverse Proxy nginx
+
+apt-get install -y nginx apache2-utils
+
+nano /etc/nginx/sites-available/reverse-proxy
+
+Настройка web-auth
+
+htpasswd -c /etc/nginx/.htpasswd WEB
+
+Пароль:
+P@ssw0rd
+
+nginx -t
+systemctl restart nginx
+
+HQ-RTR
+Настройка Static NAT для HQ
+
+conf t
+
+ip nat source static tcp 192.168.100.2 80 172.16.1.2 8080
+ip nat source static tcp 192.168.100.2 2026 172.16.1.2 2026
+
+write memory
+(Вписано)
+BR-RTR
+Настройка Static NAT для BR
+
+conf t
+
+ip nat source static tcp 192.168.200.2 8080 172.16.2.2 8080
+ip nat source static tcp 192.168.200.2 2026 172.16.2.2 2026
+
+write memory
+(Вписано)
+Финальная проверка
+
+systemctl status samba
+cat /proc/mdstat
+showmount -e
+chronyc sources
+ansible all -m ping
+docker ps
+nginx -t
+
+
