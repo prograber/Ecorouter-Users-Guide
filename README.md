@@ -60,6 +60,7 @@ timedatectl set-timezone Europe/Moscow
 ip -c -br a
 
 2. HQ-RTR
+
 ciscoenable
 configure terminal
 
@@ -140,6 +141,7 @@ ntp timezone utc+3
 write memory
 
 3. HQ-SRV (DNS/BIND9)
+
 Bashhostnamectl set-hostname hq-srv.au-team.irpo
 
 mkdir -p /etc/net/ifaces/ens3
@@ -220,6 +222,7 @@ systemctl enable --now bind
 timedatectl set-timezone Europe/Moscow
 
 4. HQ-CLI
+
 Bashhostnamectl set-hostname hq-cli.au-team.irpo
 mkdir -p /etc/net/ifaces/ens3
 mcedit /etc/net/ifaces/ens3/options
@@ -229,6 +232,7 @@ systemctl restart network
 timedatectl set-timezone Europe/Moscow
 
 5. BR-RTR
+
 ciscoenable
 configure terminal
 hostname BR-RTR
@@ -275,6 +279,7 @@ ntp timezone utc+3
 write memory
 
 6. BR-SRV
+
 Bashhostnamectl set-hostname br-srv.au-team.irpo
 
 mkdir -p /etc/net/ifaces/ens3
