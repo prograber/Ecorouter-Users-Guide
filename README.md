@@ -12,7 +12,9 @@
 - **172.16.142.152/29**
 
 Cat /etc/passwd
+
 ip -c -br a
+
 SHOW INTERFACE BRIEF
 
 ---
