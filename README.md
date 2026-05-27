@@ -163,6 +163,7 @@ nameserver 127.0.0.1
 
 useradd sshuser -u 2026
 passwd sshuser
+P@ssw0rd
 gpasswd -a sshuser wheel
 mcedit /etc/sudoers
 %wheel ALL=(ALL:ALL) NOPASSWD: ALL
