@@ -197,7 +197,7 @@ cp empty 10.10.100.in-addr.arpa
 cp empty 10.10.200.in-addr.arpa
 
 Прямая зона:
-mcedit au-team.irpo
+mcedit /var/lib/bind/etc/zone/au-team.irpo
 
 zone$TTL 1D
 @ IN SOA hq-srv.au-team.irpo. root.au-team.irpo. (
@@ -213,7 +213,7 @@ docker     IN A 172.16.1.1
 web        IN A 172.16.2.1
 
 Обратные зоны:
-mcedit 10.10.100.in-addr.arpa
+mcedit /var/lib/bind/etc/zone/10.10.100.in-addr.arpa
 
 zone# 10.10.100.in-addr.arpa
 1 IN PTR hq-rtr.au-team.irpo.
