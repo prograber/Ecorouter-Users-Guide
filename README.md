@@ -23,7 +23,7 @@ SHOW INTERFACE BRIEF
 
 ```bash
 hostnamectl set-hostname isp
-exec Bash
+exec bash
 
 # WAN (магистраль)
 mcedit /etc/net/ifaces/ens3/options
