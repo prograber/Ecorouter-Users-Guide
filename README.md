@@ -123,7 +123,7 @@ router ospf 1
 exit
 
 ip nat pool HQ 10.10.30.0-10.10.200.255
-ip nat source dynamic inside-to-outside pool HQ overload interface ISP
+ip nat source dynamic inside-to-outside pool HQ overload interface isp
 
 no dhcp-server 1
 ip pool VLAN200 10.10.200.2-10.10.200.30
