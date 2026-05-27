@@ -166,7 +166,7 @@ passwd sshuser
 P@ssw0rd
 gpasswd -a sshuser wheel
 mcedit /etc/sudoers
-%wheel ALL=(ALL:ALL) NOPASSWD: ALL
+wheel ALL=(ALL:ALL) NOPASSWD: ALL
 
 mcedit /etc/openssh/sshd_config
 Port 2026
