@@ -142,7 +142,7 @@ write memory
 
 3. HQ-SRV (DNS/BIND9)
 
-Bashhostnamectl set-hostname hq-srv.au-team.irpo
+hostnamectl set-hostname hq-srv.au-team.irpo
 
 mkdir -p /etc/net/ifaces/ens3
 mcedit /etc/net/ifaces/ens3/ipv4address
@@ -179,8 +179,9 @@ Authorized access only
 
 systemctl restart sshd
 apt-get install bind bind-utils -y
+
 Настройка BIND9:
-Bashmcedit /var/lib/bind/etc/options.conf
+mcedit /var/lib/bind/etc/options.conf
 listen-on port 53 { any; };
 forwarders { 77.88.8.8; };
 allow-query { any; };
@@ -215,7 +216,7 @@ zone# 10.10.100.in-addr.arpa
 # 10.10.200.in-addr.arpa
 1 IN PTR hq-rtr.au-team.irpo.
 2 IN PTR hq-cli.au-team.irpo.
-Bashrndc-confgen > /etc/bind/rndc.key
+rndc-confgen > /etc/bind/rndc.key
 sed -i '6,$d' /etc/bind/rndc.key
 chown -R named:named /var/lib/bind/etc/zone/*
 named-checkconf -z
@@ -224,7 +225,7 @@ timedatectl set-timezone Europe/Moscow
 
 4. HQ-CLI
 
-Bashhostnamectl set-hostname hq-cli.au-team.irpo
+hostnamectl set-hostname hq-cli.au-team.irpo
 mkdir -p /etc/net/ifaces/ens3
 mcedit /etc/net/ifaces/ens3/options
 TYPE=eth
@@ -281,7 +282,7 @@ write memory
 
 6. BR-SRV
 
-Bashhostnamectl set-hostname br-srv.au-team.irpo
+hostnamectl set-hostname br-srv.au-team.irpo
 
 mkdir -p /etc/net/ifaces/ens3
 mcedit /etc/net/ifaces/ens3/ipv4address
