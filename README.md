@@ -164,6 +164,7 @@ mcedit /etc/net/ifaces/ens3/resolv.conf
 search au-team.irpo
 nameserver 127.0.0.1
 
+cat /etc/passwd
 useradd sshuser -u 2026
 passwd sshuser
 P@ssw0rd
