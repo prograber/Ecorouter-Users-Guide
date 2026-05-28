@@ -264,8 +264,8 @@ interface br
  ip nat inside
 exit
 
-port tel
- service-instance tel/br
+port gel
+ service-instance gel/br
   encapsulation untagged
   connect ip interface br
 exit
