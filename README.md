@@ -286,8 +286,8 @@ router ospf 1
  network 10.10.10.0/30 area 0
 exit
 
-ip nat pool br 10.20.20.1-10.20.20.64
-ip nat source dynamic inside-to-outside pool BR-POOL overload interface isp
+ip nat pool BR 10.20.20.1-10.20.20.64
+ip nat source dynamic inside-to-outside pool BR overload interface isp
 
 ip route 0.0.0.0/0 172.16.2.1
 ntp timezone utc+3
