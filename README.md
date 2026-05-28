@@ -61,7 +61,8 @@ ip -c -br a
 
 2. HQ-RTR
 
-ciscoenable
+cisco
+enable
 configure terminal
 
 ip route 0.0.0.0/0 172.16.1.1
