@@ -250,7 +250,9 @@ enable
 configure terminal
 hostname BR-RTR
 ip domain-name au-team.irpo
-username net_admin password P@ssw0rd role admin
+username net_admin
+ password P@ssw0rd
+ role admin
 
 interface isp
  ip address 172.16.2.2/28
