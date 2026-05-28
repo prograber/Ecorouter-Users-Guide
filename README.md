@@ -296,6 +296,7 @@ write memory
 6. BR-SRV
 
 hostnamectl set-hostname br-srv.au-team.irpo
+exec bash
 
 mkdir -p /etc/net/ifaces/ens3
 mcedit /etc/net/ifaces/ens3/ipv4address
