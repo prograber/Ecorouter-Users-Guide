@@ -68,7 +68,9 @@ configure terminal
 ip route 0.0.0.0/0 172.16.1.1
 hostname HQ-RTR
 ip domain-name au-team.irpo
-username net_admin password P@ssw0rd role admin
+username net_admin
+ password P@ssw0rd
+ role admin
 
 interface isp
  ip address 172.16.1.2/28
