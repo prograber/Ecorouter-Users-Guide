@@ -50,7 +50,7 @@ net.ipv4.ip_forward = 1
 
 systemctl restart network
 
-iptables apt-get install iptables -y
+apt-get install iptables -y
 iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
 iptables-save > /etc/sysconfig/iptables
 systemctl enable --now iptables
