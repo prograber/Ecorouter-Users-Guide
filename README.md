@@ -245,7 +245,8 @@ timedatectl set-timezone Europe/Moscow
 
 5. BR-RTR
 
-ciscoenable
+cisco
+enable
 configure terminal
 hostname BR-RTR
 ip domain-name au-team.irpo
