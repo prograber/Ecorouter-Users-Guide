@@ -194,6 +194,7 @@ mcedit /var/lib/bind/etc/rfc1912.conf
 zone "au-team.irpo" { type master; file "au-team.irpo"; };
 zone "100.10.10.in-addr.arpa" { type master; file "10.10.100.in-addr.arpa"; };
 zone "200.10.10.in-addr.arpa" { type master; file "10.10.200.in-addr.arpa"; };
+named-checkconf -z
 
 cd /var/lib/bind/etc/zone
 cp empty au-team.irpo
