@@ -219,12 +219,18 @@ web        IN A 172.16.2.1
 
 Обратные зоны:
 mcedit /var/lib/bind/etc/zone/10.10.100.in-addr.arpa
+@ IN SOA hq-srv.au-team.irpo. root.au-team.irpo. (
+    2026051001 12H 1H 1W 1H )
+@ IN NS hq-srv.au-team.irpo.
 
-zone# 10.10.100.in-addr.arpa
 1 IN PTR hq-rtr.au-team.irpo.
 2 IN PTR hq-srv.au-team.irpo.
 
-# 10.10.200.in-addr.arpa
+mcedit /var/lib/bind/etc/zone/10.10.200.in-addr.arpa
+@ IN SOA hq-srv.au-team.irpo. root.au-team.irpo. (
+    2026051001 12H 1H 1W 1H )
+@ IN NS hq-srv.au-team.irpo.
+
 1 IN PTR hq-rtr.au-team.irpo.
 2 IN PTR hq-cli.au-team.irpo.
 rndc-confgen > /etc/bind/rndc.key
