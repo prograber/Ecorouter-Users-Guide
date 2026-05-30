@@ -59,7 +59,94 @@ timedatectl set-timezone Europe/Moscow
 
 ip -c -br a
 
-2. HQ-RTR
+2. HQ-CLI
+
+hostnamectl set-hostname hq-cli.au-team.irpo
+mkdir -p /etc/net/ifaces/ens3
+mcedit /etc/net/ifaces/ens3/options
+TYPE=eth
+BOOTPROTO=dhcp
+systemctl restart network
+timedatectl set-timezone Europe/Moscow
+
+3. BR-RTR
+
+cisco
+enable
+configure terminal
+hostname BR-RTR
+ip domain-name au-team.irpo
+username net_admin
+ password P@ssw0rd
+ role admin
+
+interface isp
+ ip address 172.16.2.2/28
+ ip nat outside
+exit
+
+interface br
+ ip address 10.20.20.1/28
+ ip nat inside
+exit
+
+port gel
+ service-instance gel/br
+  encapsulation untagged
+  connect ip interface br
+exit
+
+interface tunnel.0
+ description GRE-to-HQ-RTR
+ ip address 10.10.10.2/30
+ ip tunnel 172.16.2.2 172.16.1.2 mode gre
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 P@ssw0rd
+exit
+
+router ospf 1
+ ospf router-id 10.10.10.2
+ passive-interface default
+ no passive-interface tunnel.0
+ network 10.20.20.0/28 area 0
+ network 10.10.10.0/30 area 0
+exit
+
+ip nat pool BR 10.20.20.1-10.20.20.64
+ip nat source dynamic inside-to-outside pool BR overload interface isp
+
+ip route 0.0.0.0/0 172.16.2.1
+ntp timezone utc+3
+write memory
+
+4. BR-SRV
+
+hostnamectl set-hostname br-srv.au-team.irpo
+exec bash
+
+mkdir -p /etc/net/ifaces/ens3
+mcedit /etc/net/ifaces/ens3/ipv4address
+10.20.20.2/28
+
+mcedit /etc/net/ifaces/ens3/ipv4route
+default via 10.20.20.1
+
+mcedit /etc/net/ifaces/ens3/options
+TYPE=eth
+BOOTPROTO=static
+
+useradd sshuser -u 2026
+passwd sshuser
+gpasswd -a sshuser wheel
+
+mcedit /etc/net/ifaces/ens3/resolv.conf
+search au-team.irpo
+nameserver 10.10.100.2
+
+systemctl restart network
+timedatectl set-timezone Europe/Moscow
+
+5. HQ-RTR
 
 cisco
 enable
@@ -143,7 +230,7 @@ exit
 ntp timezone utc+3
 write memory
 
-3. HQ-SRV (DNS/BIND9)
+6. HQ-SRV (DNS/BIND9)
 
 hostnamectl set-hostname hq-srv.au-team.irpo
 
@@ -240,89 +327,3 @@ named-checkconf -z
 systemctl enable --now bind
 timedatectl set-timezone Europe/Moscow
 
-4. HQ-CLI
-
-hostnamectl set-hostname hq-cli.au-team.irpo
-mkdir -p /etc/net/ifaces/ens3
-mcedit /etc/net/ifaces/ens3/options
-TYPE=eth
-BOOTPROTO=dhcp
-systemctl restart network
-timedatectl set-timezone Europe/Moscow
-
-5. BR-RTR
-
-cisco
-enable
-configure terminal
-hostname BR-RTR
-ip domain-name au-team.irpo
-username net_admin
- password P@ssw0rd
- role admin
-
-interface isp
- ip address 172.16.2.2/28
- ip nat outside
-exit
-
-interface br
- ip address 10.20.20.1/28
- ip nat inside
-exit
-
-port gel
- service-instance gel/br
-  encapsulation untagged
-  connect ip interface br
-exit
-
-interface tunnel.0
- description GRE-to-HQ-RTR
- ip address 10.10.10.2/30
- ip tunnel 172.16.2.2 172.16.1.2 mode gre
- ip ospf authentication message-digest
- ip ospf message-digest-key 1 md5 P@ssw0rd
-exit
-
-router ospf 1
- ospf router-id 10.10.10.2
- passive-interface default
- no passive-interface tunnel.0
- network 10.20.20.0/28 area 0
- network 10.10.10.0/30 area 0
-exit
-
-ip nat pool BR 10.20.20.1-10.20.20.64
-ip nat source dynamic inside-to-outside pool BR overload interface isp
-
-ip route 0.0.0.0/0 172.16.2.1
-ntp timezone utc+3
-write memory
-
-6. BR-SRV
-
-hostnamectl set-hostname br-srv.au-team.irpo
-exec bash
-
-mkdir -p /etc/net/ifaces/ens3
-mcedit /etc/net/ifaces/ens3/ipv4address
-10.20.20.2/28
-
-mcedit /etc/net/ifaces/ens3/ipv4route
-default via 10.20.20.1
-
-mcedit /etc/net/ifaces/ens3/options
-TYPE=eth
-BOOTPROTO=static
-
-useradd sshuser -u 2026
-passwd sshuser
-gpasswd -a sshuser wheel
-
-mcedit /etc/net/ifaces/ens3/resolv.conf
-search au-team.irpo
-nameserver 10.10.100.2
-
-systemctl restart network
-timedatectl set-timezone Europe/Moscow
