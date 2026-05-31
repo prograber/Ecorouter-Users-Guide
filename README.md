@@ -4,3 +4,4 @@
 [52](https://drive.google.com/file/d/1UqwrHs-qSLwcZaTSgXY44yDJjRWT0ZmF/view)
 
 usermod -u 2011 sshuser
+ip -c -br a
